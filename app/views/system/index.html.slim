@@ -1,0 +1,31 @@
+css:
+    .application-title {
+        margin-bottom: 30px;
+    }
+    .centered-text {
+        margin-bottom: 10px;
+    }
+    .centered-botton {
+        margin-bottom: 10px;
+    }
+
+
+.row
+    .col-md-12.text-center.application-title
+        h1 Welcom to Toxico
+
+.row
+    .col-md-12.text-center.centered-text
+        | プログラミング中毒をお楽しみ下さい
+
+    - if user_signed_in?
+        .col-md-12.text-center.centered-botton
+            = link_to '始める', '/users/home', :class => 'btn btn-primary' 
+    - else
+        .col-md-12.text-center.centered-botton
+            = link_to 'ログイン', new_user_session_path, :class => 'btn btn-primary' 
+
+        .col-md-12.text-center.centered-botton
+            = link_to 'ユーザ登録', new_user_registration_path, :class => 'btn btn-primary'
+
+

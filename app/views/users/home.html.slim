@@ -1,0 +1,77 @@
+
+.row
+    .col-md-12
+        table.table
+            thead
+                tr
+                    th ワーク
+                    th
+            tbody
+                - @user.works.reverse.each do |work|
+                    tr
+                        td
+                            .row
+                                .col-md-5.name
+                                    div.name-mark
+                                    div = work.name
+                                .col-md-7
+                                    - date = "作成: #{work.created_at.strftime('%F %R')}"
+                                    - if work.updated_at != work.created_at
+                                        - date += ", 更新: #{work.updated_at.strftime('%F %R')}"
+                                    = "(#{date})"
+                            .row
+                                .col-md-1.ico
+                                    = image_tag "#{work.language}.png", :class => 'ico img-responsive'
+                                .col-md-11
+                                    pre.thumbnail = work.thumbnail
+                        td.col-md-1.col-sm-1
+                            .row
+                                .col-md-12
+                                    = link_to '編集', work, :class => 'btn btn-primary'
+                                .col-md-12
+                                    = link_to '削除', work, :class => 'btn btn-primary', :method => :delete
+
+css:
+    .btn {
+        margin-top:    2px;
+        margin-bottom: 2px;
+    }
+
+    .name-mark {
+        height: 20px;
+        width:  10px;
+        float: left;
+        margin-right: 8px;
+        border-radius: 6px 0px 0px 0px;
+        background: #2020ff;
+    }
+
+    .name {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .thumbnail {
+        padding: 4px;
+        margin: 0px;
+        font-family: monospace;
+        background: #f0f0f0;
+    }
+
+    div.ico {
+        margin-top: 10px;
+        margin-left: 0px;
+        padding-right: 0px;
+        display: table;
+    }
+
+    img.ico {
+        width: 30px;
+        height: 30px;
+        margin: 0 auto;
+        margin-left: 40px;
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+

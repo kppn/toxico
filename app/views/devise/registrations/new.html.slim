@@ -1,0 +1,25 @@
+h2 ユーザ登録
+
+.row
+    .col-lg-4.col-md-6.col-sm-8.col-xs-12
+        = bootstrap_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
+            = devise_error_messages!
+        
+            .field
+                = f.text_field :name, autofocus: true 
+        
+            .field
+                = f.email_field :email
+            
+            .field
+                - note = @minimum_password_length ?  '(最小 ' + "#{@minimum_password_length}" + '文字)' : ''
+                = f.password_field :password, autocomplete: "off", help: note
+            
+            .field
+                = f.password_field :password_confirmation, autocomplete: "off" 
+            
+            .actions
+                = f.primary '登録'
+        
+= render "devise/shared/links" 
+

@@ -1,0 +1,115 @@
+
+
+.row
+    .col-md-12
+        button#execute.execute.btn.btn-primary
+            | 実行
+    .col-md-12
+        | 入力
+        = text_area_tag 'work[input]', flash[:input], :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
+        | 結果
+        = image_tag 'execute_loading.gif', :id => 'execute_loading', :style => 'visibility: hidden'
+        span#execute_notice.notice_text = flash[:notice]
+        = text_area_tag 'result', '', :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
+        
+    .col-md-12
+        = form_for @work do |f|
+            = text_area_tag 'work[content]', flash[:content], :size => '60x60', :class => 'form-control content', :autocapitalize => 'none'
+                = @content
+            - if controller.action_name == 'new'
+                = text_area_tag 'work[name]', @work.name, :size => '1x1', :class => 'form-control', :placeholder => '名前', :autocapitalize => 'none'
+            = hidden_field_tag 'work[language]', 'ruby'
+
+            - if controller.action_name == 'new'
+                .actions = f.submit '保存', :class => 'btn btn-primary'
+
+        / button要素をformの子にしてはならない。ブラウザ動作でリクエストが飛んでしまう
+        - if controller.action_name == 'show'
+            button#save.btn.btn-primary
+               | 保存
+            = image_tag 'save_loading.gif', :id => 'save_loading', :style => 'visibility: hidden'
+            span#save_notice.notice_text
+
+css:
+    .execute {
+        width: 100%;
+    }
+
+    .content {
+        font-family: monospace;
+    }
+
+    .result {
+        border: solid 1px;
+        height: 30px;
+    }
+
+    .notice_text {
+        color: #ff0000;
+    }
+
+
+opal:
+    require 'opal-jquery'
+
+    Document.ready? do
+      elem = Element['#work_input']
+      elem.attr 'rows', elem.value.count("\n") + 1
+    end
+
+    Element['#work_input'].on :change do |evt|
+      elem = evt.element
+      elem.attr 'rows', elem.value.count("\n") + 1
+    end
+
+    Element['.language-select-botton'].on :click do |evt|
+      Element['#work_language'].value = evt.element.id
+    end
+
+    Element['#execute'].on :click do
+      # visible loading image
+      Element['#execute_loading'].css('visibility', 'visible')
+
+      input    = Element['#work_input'].value
+      content  = Element['#work_content'].value
+      language = Element['#work_language'].value
+
+      data = {content: content, language: language, input: input}
+
+      HTTP.post('/works/execute', payload: {work: data}) do |response|
+        result = response.json[:result]
+        notice = response.json[:notice]
+
+        Element['#result'].text         = result
+        Element['#execute_notice'].text = notice
+        Element['#result'].attr 'rows', result.count("\n") + 1
+
+        # visible loading image
+        Element['#execute_loading'].css('visibility', 'hidden')
+      end
+    end
+
+    Element['#save'].on :click do
+      # visible loading image
+      Element['#save_loading'].css('visibility', 'visible')
+
+      input    = Element['#work_input'].value
+      content  = Element['#work_content'].value
+      language = Element['#work_language'].value
+
+      data = {content: content, language: language, input: input}
+      url  = Element[:form][:action]
+
+      HTTP.put(url, payload: {work: data}) do |response|
+        result = response.json[:result]
+        notice = response.json[:notice]
+        unless notice.empty?
+          Element['#save_notice'].text = notice
+        end
+
+        # visible loading image
+        Element['#save_loading'].css('visibility', 'hidden')
+      end
+    end
+
+

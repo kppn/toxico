@@ -1,0 +1,20 @@
+h2 ログイン
+
+.row
+    .col-lg-4.col-md-6.col-sm-8.col-xs-12
+        = bootstrap_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| 
+        
+            .field
+                = f.email_field :email, autofocus: true 
+        
+            .field
+                = f.password_field :password, autocomplete: "off" 
+                - if devise_mapping.rememberable?
+                    .field
+                        = f.check_box :remember_me
+                
+            .actions
+                = f.primary 'ログイン'
+
+= render "devise/shared/links"
+
