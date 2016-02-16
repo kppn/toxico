@@ -3,8 +3,9 @@ class Work < ActiveRecord::Base
 
   belongs_to :user
 
-  scope :ruby, ->{where language: 'ruby'}
-  scope :c,    ->{where language: 'c'}
+  scope :ruby,    ->{where language: 'ruby'}
+  scope :c,       ->{where language: 'c'}
+  scope :crystal, ->{where language: 'crystal'}
 
   def naming(n)
     if n.present?

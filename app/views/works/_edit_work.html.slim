@@ -64,6 +64,7 @@ opal:
 
     Element['.language-select-botton'].on :click do |evt|
       Element['#work_language'].value = evt.element.id
+      puts evt.element.id
     end
 
     Element['#execute'].on :click do

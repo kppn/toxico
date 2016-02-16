@@ -43,6 +43,9 @@ group :development, :test do
   gem 'spring'
 end
 
+gem 'rspec'
+gem 'rspec-rails'
+
 gem 'unicorn'
 
 gem 'slim-rails'

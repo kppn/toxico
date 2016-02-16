@@ -2,6 +2,9 @@ class WorksController < ApplicationController
   before_action :set_work, only: [:show, :edit, :update, :destroy]
   before_action :logined_user
 
+  rescue_from StandardError, with: :rescue_standard_error
+  rescue_from ContentError, with: :rescue_content_error
+
 
   # GET /works
   # GET /works.json
@@ -90,15 +93,6 @@ class WorksController < ApplicationController
     else
       render(json: {result: '', notice: 'save error'})  and return
     end
-    #respond_to do |format|
-    #  if @work.save!
-    #    format.html { render :show, status: :ok, location: @work }
-    #    format.json { render :show, status: :ok, location: @work }
-    #  else
-    #    format.html { render :edit }
-    #    format.json { render json: @work.errors, status: :unprocessable_entity }
-    #  end
-    #end
   end
 
 
@@ -117,29 +111,20 @@ class WorksController < ApplicationController
 
   # POST /works/execute
   def execute
-    content = work_params[:content]
-    work = Work.new
-    work.file = 'temporary_work'
-    work.user_id = @user.id
-
-    begin
-      path = work.write_file content
-    rescue StandardError => e
-      render(json: {result: '', notice: 'content empty'}) and return
-    rescue SystemCallError => e
-      render(json: {result: '', notice: 'internal error'}) and return
-    end
-
-    input = work_params[:input].present? ? work_params[:input] : nil
-    out, err = exec_work(work.user_file_path, input)
-    result = out || err.sub(/.*?:/, '')  # exclude file path from ruby error message
-
-    #render text: result
+    p = Program.new(*work_params.slice(:language, :content, :input).values)
+    result = p.execute
     render json: {result: result, notice: ''}
   end
 
 
-  require 'open3'
+  # Error handlers
+  def rescue_standard_error
+    render(json: {result: '', notice: 'internal error'}) and return
+  end
+
+  def rescue_content_error
+  end 
+
 
   private
 
@@ -174,19 +159,6 @@ class WorksController < ApplicationController
       end
     end
 
-    # workを実行する
-    def exec_work(file, stdin_data = nil)
-      out = err = stat = nil
-      Open3.popen3("ruby #{file}") do |stdin, stdout, stderr, thr|
-          stdin.puts stdin_data if stdin_data
-          stdin.close
-          out = stdout.read
-          err = stderr.read
-          stat = thr.value
-      end
-      out = nil if stat != 0
-      [out, err]
-    end
 
     def merge_input(content, input)
       lines = input.lines.map {|line| '# ' + line}
@@ -194,6 +166,7 @@ class WorksController < ApplicationController
       lines.push    "\n#==user_input_end==\n"
       lines.join + content
     end
+
 
     def split_input(content)
       return ['', content] unless content =~ /\A#==user_input==/

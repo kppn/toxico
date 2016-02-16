@@ -1,0 +1,2 @@
+class ContentError < StandardError; end
+
