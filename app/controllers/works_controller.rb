@@ -39,7 +39,7 @@ class WorksController < ApplicationController
 
     @work.user_id = @user.id
     @work.language = work_params[:language].present? ? work_params[:language] : 'unknown'
-    @work.naming work_params[:name]
+    @work.naming work_params[:name], Program.new(work_params[:language], '').ext
 
     content = work_params[:content]
     flash[:content] = content

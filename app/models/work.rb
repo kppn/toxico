@@ -7,19 +7,15 @@ class Work < ActiveRecord::Base
   scope :c,       ->{where language: 'c'}
   scope :crystal, ->{where language: 'crystal'}
 
-  def naming(n)
+  def naming(n, ext)
     if n.present?
       self.name = n
-      self.file = n + '.rb'
+      self.file = "#{n}.#{ext}"
     else
       self.name = 'unknown_' + make_base_name
-      self.file = make_filename
+      self.file = "#{make_filename}.#{ext}"
     end
     self
-  end
-
-  def naming_file
-    self.file = make_filename
   end
 
   def thumbnail
@@ -80,6 +76,6 @@ class Work < ActiveRecord::Base
     end
 
     def make_filename
-      make_base_name + ".rb"
+      make_base_name
     end
 end

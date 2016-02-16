@@ -86,6 +86,14 @@ class Program
     @success
   end
 
+
+  # return extention. e.g) 'c'
+  # @return [String] return standard extention of source file of own language
+  def ext
+    get_type(language)[:extension]
+  end
+
+
   # return json formatted
   # @return [JSON] json formatted.
   def to_json

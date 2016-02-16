@@ -18,7 +18,7 @@
                 = @content
             - if controller.action_name == 'new'
                 = text_area_tag 'work[name]', @work.name, :size => '1x1', :class => 'form-control', :placeholder => '名前', :autocapitalize => 'none'
-            = hidden_field_tag 'work[language]', 'ruby'
+            = hidden_field_tag 'work[language]', @work[:language]
 
             - if controller.action_name == 'new'
                 .actions = f.submit '保存', :class => 'btn btn-primary'
