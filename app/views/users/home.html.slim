@@ -11,18 +11,18 @@
                     tr
                         td
                             .row
-                                .col-md-5.name
+                                .col-md-5.col-sm-5.name
                                     div.name-mark
                                     div = work.name
-                                .col-md-7
+                                .col-md-7.col-sm-7
                                     - date = "作成: #{work.created_at.strftime('%F %R')}"
                                     - if work.updated_at != work.created_at
                                         - date += ", 更新: #{work.updated_at.strftime('%F %R')}"
                                     = "(#{date})"
                             .row
-                                .col-md-1.ico
+                                .col-md-1.col-sm-2.ico
                                     = image_tag "#{work.language}.png", :class => 'ico img-responsive'
-                                .col-md-11
+                                .col-md-11.col-sm-10
                                     pre.thumbnail = work.thumbnail
                         td.col-md-1.col-sm-1
                             .row

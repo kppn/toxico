@@ -1,7 +1,15 @@
 / p#notice = notice
 
-h1 = @work.name
+.row
+    .col-md-1.ico
+        = image_tag "#{@work.language}.png", :class => 'ico img-responsive'
+    .col-md-11
+        h1 = @work.name
 
 == render 'edit_work'
 
+css:
+    img.ico {
+        margin-top: 20px;
+    }
 

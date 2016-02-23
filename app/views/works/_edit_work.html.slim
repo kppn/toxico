@@ -1,36 +1,45 @@
 
 
 .row
+    - button_state = controller.action_name == 'show' ? '' : ':disabled'
     .col-md-12
-        button#execute.execute.btn.btn-primary
+        = button_tag button_state, :id => 'execute', :class => 'btn btn-primary execute'
             | 実行
-    .col-md-12
-        | 入力
-        = text_area_tag 'work[input]', flash[:input], :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
-        | 結果
-        = image_tag 'execute_loading.gif', :id => 'execute_loading', :style => 'visibility: hidden'
-        span#execute_notice.notice_text = flash[:notice]
-        = text_area_tag 'result', '', :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
-        
+
     .col-md-12
         = form_for @work do |f|
-            = text_area_tag 'work[content]', flash[:content], :size => '60x60', :class => 'form-control content', :autocapitalize => 'none'
-                = @content
+
+            | 入力
+            = text_area_tag 'work[input]', @work.input, :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
+                = @work.input
+
+            | 結果
+            = image_tag 'execute_loading.gif', :id => 'execute_loading', :style => 'visibility: hidden'
+            span#execute_notice.notice_text = flash[:notice]
+            = text_area_tag 'result', '', :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
+        
+            = text_area_tag 'work[content]', @work.content, :size => '60x60', :class => 'form-control content', :autocapitalize => 'none'
+                = @work.content
             - if controller.action_name == 'new'
                 = text_area_tag 'work[name]', @work.name, :size => '1x1', :class => 'form-control', :placeholder => '名前', :autocapitalize => 'none'
             = hidden_field_tag 'work[language]', @work[:language]
-
+    
             - if controller.action_name == 'new'
-                .actions = f.submit '保存', :class => 'btn btn-primary'
+                .actions = f.submit 'SAVE', :id => 'new_save', :class => 'btn btn-primary'
 
         / button要素をformの子にしてはならない。ブラウザ動作でリクエストが飛んでしまう
         - if controller.action_name == 'show'
-            button#save.btn.btn-primary
+            = button_tag button_state, :id => 'save', :class => 'btn btn-primary save'
                | 保存
+            /button#save.btn.btn-primary
             = image_tag 'save_loading.gif', :id => 'save_loading', :style => 'visibility: hidden'
             span#save_notice.notice_text
 
 css:
+    body {
+        margin-bottom: 20px;
+    }
+
     .execute {
         width: 100%;
     }
@@ -42,6 +51,7 @@ css:
     .result {
         border: solid 1px;
         height: 30px;
+        font-family: monospace;
     }
 
     .notice_text {
@@ -63,8 +73,16 @@ opal:
     end
 
     Element['.language-select-botton'].on :click do |evt|
+      Element['.language-select-botton'].each do |elem|
+        elem.remove_class('btn-primary')
+      end
+      evt.element.add_class('btn-primary')
+
       Element['#work_language'].value = evt.element.id
-      puts evt.element.id
+
+      # enable execute/save button
+      Element['#execute'].prop('disabled', false)
+      Element['#new_save'].prop('disabled', false)
     end
 
     Element['#execute'].on :click do

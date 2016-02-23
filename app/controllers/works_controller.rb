@@ -16,8 +16,6 @@ class WorksController < ApplicationController
   # GET /works/1
   # GET /works/1.json
   def show
-    content = @work.read_file
-    flash[:input], flash[:content] = split_input content
   end
 
 
@@ -35,24 +33,7 @@ class WorksController < ApplicationController
   # POST /works
   # POST /works.json
   def create
-    @work = Work.new
-
-    @work.user_id = @user.id
-    @work.language = work_params[:language].present? ? work_params[:language] : 'unknown'
-    @work.naming work_params[:name], Program.new(work_params[:language], '').ext
-
-    content = work_params[:content]
-    flash[:content] = content
-    path = ''
-    begin
-      path = @work.write_file content
-    rescue StandardError => e
-      flash[:notice] = 'content empty'
-      return redirect_to :action => 'new'
-    rescue SystemCallError => e
-      flash[:notice] = 'internal error'
-      return redirect_to :action => 'new'
-    end
+    @work = Work.generate(work_params, @user)
 
     respond_to do |format|
       if @work.save
@@ -69,24 +50,7 @@ class WorksController < ApplicationController
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
   def update
-    @work.language = work_params[:language].present? ? work_params[:language] : 'unknown'
-
-    content = work_params[:content]
-    input   = work_params[:input]
-    flash[:content] = content
-    path = ''
-    begin
-      path = @work.write_file merge_input(content, input)
-    rescue StandardError => e
-      flash[:notice] = 'content empty'
-      return redirect_to :action => 'new'
-    rescue SystemCallError => e
-      flash[:notice] = 'internal error'
-      return redirect_to :action => 'new'
-    end
-
-    # コンテンツのみ修正ではカラムの変更がないため、touchしてupdated_atを更新
-    @work.touch
+    @work.update_content(work_params)
 
     if @work.save!
       render(json: {result: '', notice: ''})            and return
@@ -99,7 +63,6 @@ class WorksController < ApplicationController
   # DELETE /works/1
   # DELETE /works/1.json
   def destroy
-    @work.delete_file
     @work.destroy
     return redirect_to request.referer if request.referer
     respond_to do |format|
@@ -111,14 +74,15 @@ class WorksController < ApplicationController
 
   # POST /works/execute
   def execute
-    p = Program.new(*work_params.slice(:language, :content, :input).values)
-    result = p.execute
+    params = work_params.slice(:language, :content, :input).values
+    result = Program.new(*params).execute
     render json: {result: result, notice: ''}
   end
 
 
   # Error handlers
   def rescue_standard_error
+    return redirect_to request.referer if request.referer
     render(json: {result: '', notice: 'internal error'}) and return
   end
 

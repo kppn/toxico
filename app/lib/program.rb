@@ -141,7 +141,8 @@ class Program
     types = {
       ruby:    {type: :script,  executer: 'ruby',                         extension: 'rb'},
       c:       {type: :compile, compiler: 'gcc',      opt_out_file: '-o', extension: 'c'},
-      crystal: {type: :script,  executer: 'crystal',                      extension: 'cr'}
+      crystal: {type: :script,  executer: 'crystal',                      extension: 'cr'},
+      go:      {type: :script,  executer: 'go run',                       extension: 'go'},
     }
     types[language.to_sym]
   end
