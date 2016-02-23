@@ -1,9 +1,9 @@
 
 
 .row
-    - button_state = controller.action_name == 'show' ? '' : ':disabled'
+    - button_disabled = { 'new' => true, 'show' => false }[controller.action_name]
     .col-md-12
-        = button_tag button_state, :id => 'execute', :class => 'btn btn-primary execute'
+        = button_tag :disabled => button_disabled, :id => 'execute', :class => 'btn btn-primary execute'
             | 実行
 
     .col-md-12
@@ -25,11 +25,11 @@
             = hidden_field_tag 'work[language]', @work[:language]
     
             - if controller.action_name == 'new'
-                .actions = f.submit 'SAVE', :id => 'new_save', :class => 'btn btn-primary'
+                .actions = f.submit '保存', :disabled => button_disabled, :id => 'new_save', :class => 'btn btn-primary'
 
         / button要素をformの子にしてはならない。ブラウザ動作でリクエストが飛んでしまう
         - if controller.action_name == 'show'
-            = button_tag button_state, :id => 'save', :class => 'btn btn-primary save'
+            = button_tag :id => 'save', :class => 'btn btn-primary save'
                | 保存
             /button#save.btn.btn-primary
             = image_tag 'save_loading.gif', :id => 'save_loading', :style => 'visibility: hidden'
