@@ -31,7 +31,6 @@
         - if controller.action_name == 'show'
             = button_tag :id => 'save', :class => 'btn btn-primary save'
                | 保存
-            /button#save.btn.btn-primary
             = image_tag 'save_loading.gif', :id => 'save_loading', :style => 'visibility: hidden'
             span#save_notice.notice_text
 
@@ -63,32 +62,48 @@ opal:
     require 'opal-jquery'
 
     Document.ready? do
+      # expand row of input area
       elem = Element['#work_input']
       elem.attr 'rows', elem.value.count("\n") + 1
     end
 
     Element['#work_input'].on :change do |evt|
+      # expand row of input area
       elem = evt.element
       elem.attr 'rows', elem.value.count("\n") + 1
     end
 
     Element['.language-select-botton'].on :click do |evt|
+      # change button kind (btn-default, btn-primary, ...)
       Element['.language-select-botton'].each do |elem|
         elem.remove_class('btn-primary')
       end
       evt.element.add_class('btn-primary')
 
+      # save selected language to hidden
       Element['#work_language'].value = evt.element.id
 
       # enable execute/save button
       Element['#execute'].prop('disabled', false)
       Element['#new_save'].prop('disabled', false)
+
+      # fill template code to content area
+      templete = case evt.element.id
+                 when 'c'  ; "#include <stdio.h>\n\nint main()\n{\n    printf(\"\");\n    return 0;\n}"
+                 when 'go' ; "package main\nimport (\"fmt\")\n\nfunc main() {\n    fmt.Println(\"\")\n}"
+                 else      ; ""
+                 end
+      content = Element['#work_content'].value 
+      if content && content == ''
+        Element['#work_content'].value = templete
+      end
     end
 
     Element['#execute'].on :click do
       # visible loading image
       Element['#execute_loading'].css('visibility', 'visible')
 
+      # execute, and get result
       input    = Element['#work_input'].value
       content  = Element['#work_content'].value
       language = Element['#work_language'].value
@@ -112,6 +127,7 @@ opal:
       # visible loading image
       Element['#save_loading'].css('visibility', 'visible')
 
+      # save on ajax
       input    = Element['#work_input'].value
       content  = Element['#work_content'].value
       language = Element['#work_language'].value
@@ -129,6 +145,7 @@ opal:
         # visible loading image
         Element['#save_loading'].css('visibility', 'hidden')
       end
+
     end
 
 
