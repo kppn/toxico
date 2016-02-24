@@ -3,10 +3,12 @@ class Work < ActiveRecord::Base
 
   belongs_to :user
 
-  scope :ruby,    ->{where language: 'ruby'}
-  scope :c,       ->{where language: 'c'}
-  scope :crystal, ->{where language: 'crystal'}
-  scope :go,      ->{where language: 'go'}
+  scope :ruby,         ->{where language: 'ruby'}
+  scope :c,            ->{where language: 'c'}
+  scope :crystal,      ->{where language: 'crystal'}
+  scope :go,           ->{where language: 'go'}
+  scope :javascript,   ->{where language: 'javascript'}
+  scope :coffeescript, ->{where language: 'coffeescript'}
 
   attr_reader :content
   attr_reader :input

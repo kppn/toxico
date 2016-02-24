@@ -139,11 +139,12 @@ class Program
   # @return [Hash] language information hash
   def get_type(language)
     types = {
-      ruby:       {type: :script,  executer: 'ruby',                         extension: 'rb'},
-      c:          {type: :compile, compiler: 'gcc',      opt_out_file: '-o', extension: 'c'},
-      crystal:    {type: :script,  executer: 'crystal',                      extension: 'cr'},
-      go:         {type: :script,  executer: 'go run',                       extension: 'go'},
-      javascript: {type: :script,  executer: 'node',                         extension: 'js'},
+      ruby:         {type: :script,  executer: 'ruby',                         extension: 'rb'},
+      c:            {type: :compile, compiler: 'gcc',      opt_out_file: '-o', extension: 'c'},
+      crystal:      {type: :script,  executer: 'crystal',                      extension: 'cr'},
+      go:           {type: :script,  executer: 'go run',                       extension: 'go'},
+      javascript:   {type: :script,  executer: 'node',                         extension: 'js'},
+      coffeescript: {type: :script,  executer: 'coffee',                       extension: 'js.coffee'},
     }
     types[language.to_sym]
   end
