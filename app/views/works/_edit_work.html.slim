@@ -18,7 +18,7 @@
             span#execute_notice.notice_text = flash[:notice]
             = text_area_tag 'result', '', :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
         
-            = text_area_tag 'work[content]', @work.content, :size => '60x60', :class => 'form-control content', :autocapitalize => 'none'
+            = text_area_tag 'work[content]', @work.content, :size => '60x35', :class => 'form-control content', :autocapitalize => 'none'
                 = @work.content
             - if controller.action_name == 'new'
                 = text_area_tag 'work[name]', @work.name, :size => '1x1', :class => 'form-control', :placeholder => '名前', :autocapitalize => 'none'
@@ -33,6 +33,13 @@
                | 保存
             = image_tag 'save_loading.gif', :id => 'save_loading', :style => 'visibility: hidden'
             span#save_notice.notice_text
+            #autosave.btn-group data-toggle='buttons'
+                label.btn.btn-primary
+                    = radio_button_tag 'autosave', 'on'
+                    | On
+                label.btn.btn-primary
+                    = radio_button_tag 'autosave', 'off'
+                    | Off
 
 css:
     body {
@@ -123,7 +130,8 @@ opal:
       end
     end
 
-    Element['#save'].on :click do
+
+    def save
       # visible loading image
       Element['#save_loading'].css('visibility', 'visible')
 
@@ -145,7 +153,35 @@ opal:
         # visible loading image
         Element['#save_loading'].css('visibility', 'hidden')
       end
+    end
 
+
+    Element['#save'].on :click do
+      save
+    end
+
+
+    class Interval
+      def initialize(time = 0, &block)
+        @interval = `setInterval(function(){#{block.call}}, time)`
+      end
+
+      def stop
+        `clearInterval(#@interval)`
+      end
+    end
+
+    interval = nil
+    Element['#autosave input[type=radio]'].on :change do |evt|
+      val = evt.element.value
+      case val
+      when 'on'
+        interval = Interval.new 60000 do
+                     save
+                   end
+      when 'off'
+        interval.stop
+      end
     end
 
 
