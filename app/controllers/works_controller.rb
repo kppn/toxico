@@ -79,6 +79,12 @@ class WorksController < ApplicationController
     render json: {result: result, notice: ''}
   end
 
+  # POST /works/execute
+  def create_file
+    language, content = work_params.slice(:language, :content).values
+    user = logined_user
+    # create_file_link(language, content)
+  end
 
   # Error handlers
   def rescue_standard_error

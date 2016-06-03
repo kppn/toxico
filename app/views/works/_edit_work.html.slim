@@ -33,13 +33,40 @@
                | 保存
             = image_tag 'save_loading.gif', :id => 'save_loading', :style => 'visibility: hidden'
             span#save_notice.notice_text
-            #autosave.btn-group data-toggle='buttons'
-                label.btn.btn-primary
-                    = radio_button_tag 'autosave', 'on'
-                    | On
-                label.btn.btn-primary
-                    = radio_button_tag 'autosave', 'off'
-                    | Off
+
+.row
+    .col-md-12.additional_menu_area
+        dl#additional_menu.additional_menu
+            div
+                dt.text-center
+                    = image_tag 'wave_allow_down.png', :id => 'wave_allow_down', :class => 'wave_allow_down'
+                dd
+                    - if controller.action_name == 'show'
+                        .separator
+                            .row.additional_menu_row
+                                .col-md-2
+                                    | 自動保存 
+                                .col-md-10
+                                    #autosave.btn-group data-toggle='buttons'
+                                        label.btn.btn-primary
+                                            = radio_button_tag 'autosave', 'on'
+                                            | On
+                                        label.btn.btn-primary.active
+                                            = radio_button_tag 'autosave', 'off'
+                                            | Off
+                    .separator
+                        .row.additional_menu_row
+                            span#create_file_url.create_file_url
+                                = "/works/#{@work.id}/files"
+                            .col-md-2
+                                | ファイルダウンロード
+                            .col-md-2
+                                = button_tag :id => 'create_file', :class => 'btn btn-primary create_file'
+                                    | 作成
+                            .col-md-8#file_link_box
+                                span#create_file_notice.notice_text
+
+
 
 css:
     body {
@@ -62,6 +89,39 @@ css:
 
     .notice_text {
         color: #ff0000;
+    }
+
+    .additional_menu dd {
+        display: none;
+    }
+    
+    .additional_menu {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    .additional_menu_row {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .separator {
+        border-bottom: solid 2px;
+        border-bottom-width: 90%;
+        border-color: #e0e0e0;
+    }
+
+    .wave_allow_down {
+        width: 40px;
+        height: auto;
+    }
+
+    .rotate_180 {
+        transform: rotate(180deg);
+    }
+
+    .create_file_url {
+        display: none;
     }
 
 
@@ -149,10 +209,10 @@ opal:
         unless notice.empty?
           Element['#save_notice'].text = notice
         end
-
-        # visible loading image
-        Element['#save_loading'].css('visibility', 'hidden')
       end
+
+      # visible loading image
+      Element['#save_loading'].css('visibility', 'hidden')
     end
 
 
@@ -184,4 +244,44 @@ opal:
       end
     end
 
+
+    #=============== Additional features ================
+
+    Element['#additional_menu dt'].on :click do |evt|
+      # allow rotate
+      if Element['#additional_menu dd'].css('display') == 'block'
+        Element['#wave_allow_down'].remove_class('rotate_180')
+      else
+        Element['#wave_allow_down'].add_class('rotate_180')
+      end
+
+      # toggle additional area
+      evt.element.next.slide_toggle 100
+    end
+
+
+    Element['#create_file'].on :click do |evt|
+      Element['#file_link_box a'].remove()
+
+      # create file and get url on ajax
+      input    = Element['#work_input'].value
+      content  = Element['#work_content'].value
+      language = Element['#work_language'].value
+
+      data = {content: content, language: language, input: input}
+      url  = Element['#create_file_url'].text
+
+      HTTP.post(url, payload: {work: data}) do |response|
+        result = response.json[:result]
+        notice = response.json[:notice]
+
+        unless notice.empty?
+          Element['#create_file_notice'].text = notice
+          break
+        end
+
+        file_url = "<a href='#{result}'>#{result}</a>"
+        Element['#file_link_box'].append(file_url)
+      end
+    end
 

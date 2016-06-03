@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
+  #========== top ======================
   root :to => 'top#index'
 
   devise_for :users, :controllers => {
@@ -9,17 +10,29 @@ Rails.application.routes.draw do
     :passwords     => "devise_custom/passwords",
   }
 
+  #========== users ======================
   get 'users/home'     => 'users#home'
   # resources :users
   
-  resources :works,   :except => [:index, :edit]
-  post 'works/execute'  => 'works#execute'
 
+  #========== works ======================
+  resources :works,   :except => [:index, :edit]
+  post 'works/execute'      => 'works#execute'
+
+  #========== works/files ======================
+  namespace 'works' do
+    post ':id/files'  => 'files#create'
+  end
+
+
+  #========== system ======================
   get 'system/notify_global_ip'   => 'system#notify_global_ip'
 
 
-  # errors
+  #========== errors ======================
   get '*path', controller: 'application', action: 'render_404'
+
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -64,15 +64,16 @@ class Work < ActiveRecord::Base
 
 
   # ファイルを保存する
-  def write_file(content)
-    raise StandardError.new if content.blank?
+  def write_file(path = nil)
+    raise StandardError.new if @content.blank?
 
-    content = content.encode(Encoding::UTF_8, :universal_newline => true)
+    content = @content.encode(Encoding::UTF_8, :universal_newline => true)
+    path ||= user_file_path
 
-    File.open user_file_path, "wb" do |f|
+    File.open path, "wb" do |f|
       f.write content
     end
-    user_file_path 
+    path
   end
 
 
@@ -85,6 +86,14 @@ class Work < ActiveRecord::Base
       # 何もしない。ファイルが開けない/読み込めない場合はnil
     end
     content
+  end
+
+
+  def publish_file
+    dir_path = "#{Rails.root.to_s}/#{public_user_dir}"
+    Dir.mkdir(dir_path) unless Dir.exists?(dir_path)
+    write_file "#{Rails.root.to_s}/#{public_user_file_path}"
+    user_file_url
   end
 
 
@@ -126,6 +135,23 @@ class Work < ActiveRecord::Base
     # ユーザファイルのパスを返す
     def user_file_path
       file ? "#{user_dir_base}/#{user_id}/#{file}" : nil
+    end
+
+    # 
+    def public_user_dir_base
+      "public/user_files"
+    end
+
+    def public_user_dir
+      "#{public_user_dir_base}/#{user_id}"
+    end
+
+    def public_user_file_path
+      file ? "#{public_user_dir}/#{file}" : nil
+    end
+
+    def user_file_url
+      file ? "/user_files/#{user_id}/#{file}" : nil
     end
 
 
