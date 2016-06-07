@@ -128,28 +128,5 @@ class WorksController < ApplicationController
         # 何もしない。ファイルが開けない/読み込めない場合はnil
       end
     end
-
-
-    def merge_input(content, input)
-      lines = input.lines.map {|line| '# ' + line}
-      lines.unshift "#==user_input==\n"
-      lines.push    "\n#==user_input_end==\n"
-      lines.join + content
-    end
-
-
-    def split_input(content)
-      return ['', content] unless content =~ /\A#==user_input==/
-      lines = content.lines[1..-1]
-
-      n = lines.find_index {|l| l =~ /\A#==user_input_end==/}
-
-      input_lines = lines[0..n-1].map {|l| l.sub /\A# /, ''}
-      input_lines[-1].sub! "\n", ''
-
-      input   = input_lines.join
-      content = lines[n+1..-1].join
-
-      [input, content]
-    end
 end
+
