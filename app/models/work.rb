@@ -77,18 +77,6 @@ class Work < ActiveRecord::Base
   end
 
 
-  # ファイルから読み込む
-  def read_file
-    content = nil
-    begin
-      content = File.open(user_file_path).read 
-    rescue SystemCallError => e
-      # 何もしない。ファイルが開けない/読み込めない場合はnil
-    end
-    content
-  end
-
-
   def publish_file
     dir_path = "#{Rails.root.to_s}/#{public_user_dir}"
     Dir.mkdir(dir_path) unless Dir.exists?(dir_path)

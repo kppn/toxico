@@ -116,17 +116,5 @@ class WorksController < ApplicationController
     def user_file_path(file)
       file ? "#{user_dir_path}/#{file}" : nil
     end
-
-
-    # ファイルから読み込む
-    def read_file(file_path)
-      content = nil
-      begin
-        content = File.open(file_path).read 
-      rescue SystemCallError => e
-        puts 'Illegal'
-        # 何もしない。ファイルが開けない/読み込めない場合はnil
-      end
-    end
 end
 
