@@ -171,13 +171,15 @@ opal:
       Element['#execute_loading'].css('visibility', 'visible')
 
       # execute, and get result
-      input    = Element['#work_input'].value
-      content  = Element['#work_content'].value
-      language = Element['#work_language'].value
+      payload = {
+        work: {
+          content:  Element['#work_content'].value,
+          language: Element['#work_language'].value,
+          input:    Element['#work_input'].value,
+        }
+      }
 
-      data = {content: content, language: language, input: input}
-
-      HTTP.post('/works/execute', payload: {work: data}) do |response|
+      HTTP.post('/works/execute', payload: payload) do |response|
         result = response.json[:result]
         notice = response.json[:notice]
 
@@ -185,7 +187,7 @@ opal:
         Element['#execute_notice'].text = notice
         Element['#result'].attr 'rows', result.count("\n") + 1
 
-        # visible loading image
+        # hide loading image
         Element['#execute_loading'].css('visibility', 'hidden')
       end
     end
@@ -196,23 +198,25 @@ opal:
       Element['#save_loading'].css('visibility', 'visible')
 
       # save on ajax
-      input    = Element['#work_input'].value
-      content  = Element['#work_content'].value
-      language = Element['#work_language'].value
-
-      data = {content: content, language: language, input: input}
       url  = Element[:form][:action]
+      payload = {
+        work: {
+          content:  Element['#work_content'].value,
+          language: Element['#work_language'].value,
+          input:    Element['#work_input'].value,
+        }
+      }
 
-      HTTP.put(url, payload: {work: data}) do |response|
+      HTTP.put(url, payload: payload) do |response|
         result = response.json[:result]
         notice = response.json[:notice]
         unless notice.empty?
           Element['#save_notice'].text = notice
         end
-      end
 
-      # visible loading image
-      Element['#save_loading'].css('visibility', 'hidden')
+        # hide loading image
+        Element['#save_loading'].css('visibility', 'hidden')
+      end
     end
 
 
@@ -264,14 +268,16 @@ opal:
       Element['#file_link_box a'].remove()
 
       # create file and get url on ajax
-      input    = Element['#work_input'].value
-      content  = Element['#work_content'].value
-      language = Element['#work_language'].value
-
-      data = {content: content, language: language, input: input}
       url  = Element['#create_file_url'].text
+      payload = {
+        work: {
+          content:  Element['#work_content'].value,
+          language: Element['#work_language'].value,
+          input:    Element['#work_input'].value,
+        }
+      }
 
-      HTTP.post(url, payload: {work: data}) do |response|
+      HTTP.post(url, payload: payload) do |response|
         result = response.json[:result]
         notice = response.json[:notice]
 
