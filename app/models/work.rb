@@ -20,25 +20,18 @@ class Work < ActiveRecord::Base
 
   def self.generate(params, user)
     content, input = *params.extract!(:content, :input).values
-
-    work = Work.new(params)
-
-    work.user_id = user.id
-    work.naming
-    work.instance_variable_set(:@content, content)
-    work.instance_variable_set(:@input,   input)
-    work
+    user.works.new(params) do |w|
+      w.naming
+      w.store_content_input(content, input)
+    end
   end
 
 
   def update_content(params)
-    content, input = *params.extract!(:content, :input).values
-
     # コンテンツの修正ではカラムの変更がないため、touchしてupdated_atを更新
     self.touch
 
-    self.instance_variable_set(:@content, content)
-    self.instance_variable_set(:@input,   input)
+    store_content_input *params.extract!(:content, :input).values
     self
   end
 
@@ -82,6 +75,12 @@ class Work < ActiveRecord::Base
     Dir.mkdir(dir_path) unless Dir.exists?(dir_path)
     write_file "#{Rails.root.to_s}/#{public_user_file_path}"
     user_file_url
+  end
+
+
+  def store_content_input(content, input)
+    instance_variable_set(:@content, content)
+    instance_variable_set(:@input,   input)
   end
 
 
@@ -145,5 +144,6 @@ class Work < ActiveRecord::Base
         # 何もしない。ファイルが消せなくてもユーザには関係ない
       end
     end
+
 end
 
