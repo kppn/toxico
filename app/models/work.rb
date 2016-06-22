@@ -31,19 +31,17 @@ class Work < ActiveRecord::Base
     # コンテンツの修正ではカラムの変更がないため、touchしてupdated_atを更新
     self.touch
 
-    store_content_input *params.extract!(:content, :input).values
+    @content, @input = *params.extract!(:content, :input).values
     self
   end
 
 
   def naming
     if self.name.present?
-      self.file = name
+      naming_by_input
     else
-      self.name = "unknown_#{make_basename}"
-      self.file = make_basename
+      naming_by_default
     end
-    self
   end
 
 
@@ -57,15 +55,10 @@ class Work < ActiveRecord::Base
 
 
   # ファイルを保存する
-  def write_file(path = nil)
+  def write_file(path = user_file_path)
     raise StandardError.new if @content.blank?
 
-    content = @content.encode(Encoding::UTF_8, :universal_newline => true)
-    path ||= user_file_path
-
-    File.open path, "wb" do |f|
-      f.write content
-    end
+    File.write(path, @content.encode(Encoding::UTF_8, :universal_newline => true))
     path
   end
 
@@ -79,8 +72,10 @@ class Work < ActiveRecord::Base
 
 
   def store_content_input(content, input)
-    instance_variable_set(:@content, content)
-    instance_variable_set(:@input,   input)
+    instance_eval do
+      @content = content
+      @input = input
+    end
   end
 
 
@@ -144,6 +139,18 @@ class Work < ActiveRecord::Base
         # 何もしない。ファイルが消せなくてもユーザには関係ない
       end
     end
+
+    def naming_by_input
+      self.file = name
+      self
+    end
+
+    def naming_by_default
+      self.name = "unknown_#{make_basename}"
+      self.file = make_basename
+      self
+    end
+
 
 end
 
