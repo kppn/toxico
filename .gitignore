@@ -16,5 +16,11 @@
 !/log/.keep
 /tmp
 
+# Ignore all compiled assets
+public/assets/*
+
+# Ignore temporary work files
+.crystal
+
 
 
