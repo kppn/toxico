@@ -7,6 +7,8 @@
                     th ワーク
                     th
             tbody
+                /- @user.works.includes(:code).reverse.each do |work|
+                /- @user.works.reverse.each do |work|
                 - @user.works.reverse.each do |work|
                     tr
                         td
@@ -23,7 +25,7 @@
                                 .col-md-1.col-sm-2.ico
                                     = image_tag "#{work.language}.png", :class => 'ico img-responsive'
                                 .col-md-11.col-sm-10
-                                    pre.thumbnail = work.thumbnail
+                                    = render partial: 'thumbnail', locals: {code: work.code}
                         td.col-md-1.col-sm-1
                             .row
                                 .col-md-12

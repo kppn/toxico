@@ -13,6 +13,7 @@ module Texico
     # -- all .rb files in that directory are automatically loaded.
     #
     config.autoload_paths += Dir["#{config.root}/app/lib/"]
+    config.autoload_paths += Dir["#{config.root}/app/decorator/"]
 
 
     # Allow Web-console from anywhere

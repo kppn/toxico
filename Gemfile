@@ -53,6 +53,7 @@ gem 'rspec-rails'
 
 gem 'unicorn'
 
+gem 'awesome_print'
 gem 'slim-rails'
 gem 'devise'
 gem 'cancancan'
@@ -66,5 +67,7 @@ gem 'opal'
 gem 'opal-rails'
 gem 'opal-jquery'
 gem 'bootstrap_form'
+gem 'active_decorator'
+gem "activerecord-tableless"
 
 

@@ -8,9 +8,9 @@ class WorksController < ApplicationController
 
   # GET /works
   # GET /works.json
-  # def index
-  #   @works = Work.all
-  # end
+  def index
+    @works = WorkWithContent.all
+  end
 
 
   # GET /works/1
@@ -22,6 +22,7 @@ class WorksController < ApplicationController
   # GET /works/new
   def new
     @work = Work.new
+    @work.build_code
   end
 
 
@@ -33,7 +34,11 @@ class WorksController < ApplicationController
   # POST /works
   # POST /works.json
   def create
-    @work = Work.generate(work_params, @user)
+    @work = Work.new work_params
+
+    @work.user_id = @user.id
+    @work.naming
+    @work.code.naming @work.name
 
     respond_to do |format|
       if @work.save
@@ -50,7 +55,8 @@ class WorksController < ApplicationController
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
   def update
-    @work.update_content(work_params)
+    @work.code.update_content(work_params[:code_attributes])
+    @work.touch
 
     if @work.save!
       render(json: {result: '', notice: ''})            and return
@@ -74,8 +80,11 @@ class WorksController < ApplicationController
 
   # POST /works/execute
   def execute
-    params = work_params.slice(:language, :content, :input).values
-    result = Program.new(*params).execute
+    language = work_params[:language]
+    content, input = work_params[:code_attributes].slice(:content, :input).values
+
+    result = Program.new(language, content, input).execute
+
     render json: {result: result, notice: ''}
   end
 
@@ -103,12 +112,7 @@ class WorksController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def work_params
-      params.require(:work).permit(:name, :content, :language, :input)
-    end
-    
-    # ユーザファイルのパスを返す
-    def user_file_path(file)
-      file ? "#{user_dir_path}/#{file}" : nil
+      params.require(:work).permit(:name, :language, code_attributes: [:content, :input])
     end
 end
 

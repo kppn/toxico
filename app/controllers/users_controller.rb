@@ -10,7 +10,6 @@ class UsersController < ApplicationController
   end
 
   def home
-    # @user.works.each{|work| work.thumbnail = 
   end
 
   # GET /users/1

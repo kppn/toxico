@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActionController::RoutingError, with: :render_404
 
-  before_action :logined_user
   before_filter :configure_permitted_parameters, if: :devise_controller?
 
   helper_method :user_dir_path
@@ -17,7 +16,7 @@ class ApplicationController < ActionController::Base
 
   protected
     def configure_permitted_parameters
-      devise_parameter_sanitizer.for(:sign_up) do |u|
+      devise_parameter_sanitizer.permit(:sign_up) do |u|
         u.permit(:name, :email, :password, :password_confirmation)
       end
     end

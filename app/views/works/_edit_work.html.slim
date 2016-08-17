@@ -8,21 +8,21 @@
 
     .col-md-12
         = form_for @work do |f|
-
             | 入力
-            = text_area_tag 'work[input]', @work.input, :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
-                = @work.input
+            = f.fields_for :code do |cf|
+                = cf.text_area :input, :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
 
             | 結果
             = image_tag 'execute_loading.gif', :id => 'execute_loading', :style => 'visibility: hidden'
             span#execute_notice.notice_text = flash[:notice]
             = text_area_tag 'result', '', :size => '60x1', :class => 'form-control result', :autocapitalize => 'none'
         
-            = text_area_tag 'work[content]', @work.content, :size => '60x35', :class => 'form-control content', :autocapitalize => 'none'
-                = @work.content
+            = f.fields_for :code do |cf|
+                = cf.text_area :content, :size => '60x35', :class => 'form-control content', :autocapitalize => 'none'
+
             - if controller.action_name == 'new'
-                = text_area_tag 'work[name]', @work.name, :size => '1x1', :class => 'form-control', :placeholder => '名前', :autocapitalize => 'none'
-            = hidden_field_tag 'work[language]', @work[:language]
+                = f.text_area :name, :size => '1x1', :class => 'form-control', :placeholder => '名前', :autocapitalize => 'none'
+            = f.hidden_field :language
     
             - if controller.action_name == 'new'
                 .actions = f.submit '保存', :disabled => button_disabled, :id => 'new_save', :class => 'btn btn-primary'
@@ -130,11 +130,11 @@ opal:
 
     Document.ready? do
       # expand row of input area
-      elem = Element['#work_input']
+      elem = Element['#work_code_attributes_input']
       elem.attr 'rows', elem.value.count("\n") + 1
     end
 
-    Element['#work_input'].on :change do |evt|
+    Element['#work_code_attributes_input'].on :change do |evt|
       # expand row of input area
       elem = evt.element
       elem.attr 'rows', elem.value.count("\n") + 1
@@ -160,9 +160,9 @@ opal:
                  when 'go' ; "package main\nimport (\"fmt\")\n\nfunc main() {\n    fmt.Println(\"\")\n}"
                  else      ; ""
                  end
-      content = Element['#work_content'].value 
+      content = Element['#work_code_content'].value 
       if content && content == ''
-        Element['#work_content'].value = templete
+        Element['#work_code_content'].value = templete
       end
     end
 
@@ -173,9 +173,11 @@ opal:
       # execute, and get result
       payload = {
         work: {
-          content:  Element['#work_content'].value,
+          code_attributes: {
+            input:    Element['#work_code_attributes_input'].value,
+            content:  Element['#work_code_attributes_content'].value
+          },
           language: Element['#work_language'].value,
-          input:    Element['#work_input'].value,
         }
       }
 
@@ -201,9 +203,11 @@ opal:
       url  = Element[:form][:action]
       payload = {
         work: {
-          content:  Element['#work_content'].value,
+          code_attributes: {
+            input:    Element['#work_code_attributes_input'].value,
+            content:  Element['#work_code_attributes_content'].value
+          },
           language: Element['#work_language'].value,
-          input:    Element['#work_input'].value,
         }
       }
 
@@ -271,9 +275,11 @@ opal:
       url  = Element['#create_file_url'].text
       payload = {
         work: {
-          content:  Element['#work_content'].value,
+          code_attributes: {
+            input:    Element['#work_code_attributes_input'].value,
+            content:  Element['#work_code_attributes_content'].value
+          },
           language: Element['#work_language'].value,
-          input:    Element['#work_input'].value,
         }
       }
 
@@ -283,7 +289,7 @@ opal:
 
         unless notice.empty?
           Element['#create_file_notice'].text = notice
-          break
+          #break
         end
 
         file_url = "<a href='#{result}'>#{result}</a>"
