@@ -11,6 +11,7 @@ class Work < ActiveRecord::Base
   scope :go,           ->{where language: 'go'}
   scope :javascript,   ->{where language: 'javascript'}
   scope :coffeescript, ->{where language: 'coffeescript'}
+  scope :bash,         ->{where language: 'bash'}
 
 
   def naming

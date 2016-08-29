@@ -145,6 +145,7 @@ class Program
       go:           {type: :script,  executer: 'go run',                       extension: 'go'},
       javascript:   {type: :script,  executer: 'node',                         extension: 'js'},
       coffeescript: {type: :script,  executer: 'coffee',                       extension: 'js.coffee'},
+      bash:         {type: :script,  executer: 'bash',                         extension: 'sh'},
     }
     types[language.to_sym]
   end
