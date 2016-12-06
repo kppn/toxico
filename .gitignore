@@ -17,7 +17,7 @@
 /tmp
 
 # Ignore all compiled assets
-public/assets/*
+/public/assets/*
 
 # Ignore temporary work files
 .crystal
