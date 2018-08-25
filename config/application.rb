@@ -17,7 +17,7 @@ module Texico
 
 
     # Allow Web-console from anywhere
-    config.web_console.whitelisted_ips = %w(0.0.0.0/0 ::0)
+    # config.web_console.whitelisted_ips = %w(0.0.0.0/0 ::0)
 
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.

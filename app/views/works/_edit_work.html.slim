@@ -160,9 +160,9 @@ opal:
                  when 'go' ; "package main\nimport (\"fmt\")\n\nfunc main() {\n    fmt.Println(\"\")\n}"
                  else      ; ""
                  end
-      content = Element['#work_code_content'].value 
+      content = Element['#work_code_attributes_content'].value 
       if content && content == ''
-        Element['#work_code_content'].value = templete
+        Element['#work_code_attributes_content'].value = templete
       end
     end
 

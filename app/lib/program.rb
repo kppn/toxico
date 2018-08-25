@@ -147,6 +147,7 @@ class Program
       coffeescript: {type: :script,  executer: 'coffee',                       extension: 'js.coffee'},
       bash:         {type: :script,  executer: 'bash',                         extension: 'sh'},
       elixir:       {type: :script,  executer: 'elixir',                       extension: 'exs'},
+      python2:      {type: :script,  executer: 'python2',                      extension: 'py'},
     }
     types[language.to_sym]
   end
